@@ -1,6 +1,6 @@
 const moment =require('moment')
 const momenttz=require('moment-timezone')
-const timezone=require('Asia/Calcutta')
+const timeZone='Asia/Calcutta'
 let now=()=>{
     return moment.utc().format()
 }

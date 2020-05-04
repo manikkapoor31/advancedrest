@@ -78,11 +78,11 @@ let signupFunction=(req,res)=>{
             })
         })
     }
-    validateUserInput(req,res).then(createUser).then(resolve)=>{
+    validateUserInput(req,res).then(createUser).then((resolve)=>{
         delete resolve.password
         let apiResponse=response.generate(false,'user created',200,null)
         res.send(apiResponse)
-    }
+    })
 
 }
 

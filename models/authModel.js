@@ -4,12 +4,12 @@ const time=require('../libs/timeLib')
 
 const auth=new Schema({
     userId:{
-        type:string
+        type:String
     },
     authToken:{
         type:String
     },
-    tokenSecret={
+    tokenSecret:{
         type:String
     },
     tokenGenerationTime:{
@@ -17,4 +17,4 @@ const auth=new Schema({
         default:time.now()
     }
 })
-module.exports=mongoose.model('Auth',Auth)
+module.exports=mongoose.model('auth',auth)

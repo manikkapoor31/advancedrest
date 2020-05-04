@@ -2,9 +2,9 @@
 /*
 *Module Dependencies
  */
-const mongoose=require('mongoose'),
-schema=mongoose.schema;
-let userSchema=new schema({
+const mongoose = require('mongoose'),
+Schema=mongoose.Schema;
+let userSchema = new Schema({
     userId:{
         type:String,
         default:'',

@@ -19,6 +19,6 @@ let Password=(password)=>{
 }
 
 module.exports={
-    Email:email,
-    Password:password
+    Email:Email,
+    Password:Password
 }

@@ -1,5 +1,6 @@
-const express=requrie('express')
-const router=express.router()
+const express=require('express')
+const router=express.Router()
+const userController=require('./../controllers/userController')
 const appConfig=require('./../config/appConfig')
 
 module.exports.setRouter=(app)=>{
