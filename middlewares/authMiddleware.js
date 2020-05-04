@@ -2,9 +2,9 @@ const mongoose=require('mongoose')
 const jwt=require('jsonwebtoken')
 const request=require('request')
 
-const logger=require('./../libs/loggerLib')
-const responseLib=require('./../libs/responseLib')
-const check=require('./../libs/checkLib')
+const logger=require('../libs/loggerLib')
+const responseLib=require('../libs/responseLib')
+const check=require('../libs/checkLib')
 
 let isAuthenticated=(req,res,next)=>{
     console.log(`--------------- inside isAUthenticated function ----------------`)
