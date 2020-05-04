@@ -99,10 +99,9 @@ let isAuthorized = (req, res, next) => {
       let apiResponse = responseLib.generate(true, 'Authentication Token Is Missing In Request', 403, null)
       res.send(apiResponse)
     }
-  }
+}
   
-  module.exports = {
+module.exports = {
     isAuthenticated: isAuthenticated,
     isAuthorized: isAuthorized
-  }
-  
+}  
