@@ -7,7 +7,7 @@ appConfig.db={
 }
 appConfig.apiVersion='/api/v1';
 module.exports={
-    part:appConfig.port,
+    port:appConfig.port,
     allowedCorsOrigin:appConfig.allowedCorsOrigin,
     environment:appConfig.env,
     db:appConfig.db,

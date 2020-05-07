@@ -9,7 +9,7 @@ module.exports.setRouter=(app)=>{
 
     
     // params: firstName, lastName, email, mobileNumber, password
-    app.post(`${baseUrl}/signup`, userController.signUpFunction);
+    app.post(`${baseUrl}/signup`, userController.signupFunction);
     /**
      * @apiGroup users
      * @apiVersion  1.0.0

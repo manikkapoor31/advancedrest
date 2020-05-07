@@ -59,10 +59,14 @@ app.use(globalErrorMiddleware.globalNotFoundHandler);
 const server=http.createServer(app);
 //start listening to http server
 console.log(appConfig);
-server.listen(appconfig.port);
+server.listen(appConfig.port);
 server.on('error',onError);
 server.on('listening',onListening);
 //end serrver listening code
+
+//socket.io event handler
+const socketLib=require('./libs/socketLib')
+const socketServer=socketLib.setServer(server)
 
 /*
  *Event Listener for Http Server "error" event 
@@ -90,11 +94,11 @@ function onError(error){
 *Event Listener for HTTP sever 'listening event
  */
 function onListening(){
-    var adr=seerver.address()
+    var addr=server.address()
     var bind=typeof addr==='string'?'pipe'+addr:'port'+addr.port;
     ('listening on'+ bind)
-    logger.info('server listening on port'+addr.port,'serverOnListeningHandler',10)
-    let db=mongoose.connect(appConfig.db.uri,{useMongoClient:true})
+    logger.info('server listening on port'+addr.port,'serverOnListeningHandler',10);
+    let db=mongoose.connect(appConfig.db.uri,{useMongoClient:true});
 }
 process.on('unhandledRejection',(reason,p)=>{
     console.log('Unhandled Rejection at : Promise',p,'reason:',reason)

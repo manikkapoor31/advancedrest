@@ -1,3 +1,4 @@
+'use strict'
 const logger=require('pino')
 const moment=require('moment')
 

@@ -5,12 +5,100 @@ const logger =require('./../libs/loggerLib')
 const response=require('./../libs/responseLib')
 const time=require('./../libs/timeLib')
 const validateInput= require('./../libs/paramsValidationLib')
+const check =require('./../libs/checkLib')
+const token=require('./../libs/tokenLib')
+/* Models */
+const authModel=mongoose.model('auth')
 
 /*Models */
 const UserModel=mongoose.model('User')
 
-// start user signup function
+/*Get all User Details */
+let getAllUser=(req,res)=>{
+    UserModel.find().select('-__v-_id').lean().exec((err,result)=>{
+        if(err){
+            console.log(err)
+            logger.error(err.message,'Userr Controller:getAllUser',10)
+            let apiResponse=response.generate(true,'Failed to Find User',500,null)
+            res.send(apiResponse)
+        }
+        else if(check.isEmpty(result)) {
+            logger.info('No User Found','User Controller:getAllUser',10)
+            let apiResponse=response.generate(true,'No User Found',404,null)
+            res.send(apiResponse)
+        }
+        else{
+            let apiResponse=response.generate(false,'All User Details Found',200,result)
+            res.send(apiResponse)
+        }
 
+    })
+}//end get all users
+
+//GET SINGLE USER DETAILS
+let getSingleUser=(req,res)=>{
+    UserModel.findOne({'userId':req.params.userId}).select('-password-__v-_id').lean().exec((err,result)=>{
+        if (err){
+            console.log(err)
+            let apiResponse=response.generate(true,'Failed to find user details',500,null)
+            res.send(apiResponse)
+        }
+        else if(check.isEmpty(result)){
+            logger.info('No User Found','User Controller:getSingleUser')
+            let apiResponse=response.generate(true,'No User Found',404,null)
+            res.send(apiResponse)
+        }
+        else{
+            let apiResponse=response.generate(false,'User Details Found',200,result)
+            res.send(apiResponse)
+        }
+    })
+}//end get single user function
+
+//DELETE USER FUNCTION
+let deleteUser=(req,res)=>{
+    UserModel.findOneAndRemove({'userId':req.param.userId}).exec((err,result)=>{
+        if(err){
+            console.log(err)
+            logger.error(err.message,'User Controller: deleteUser',10)
+            let apiResponse=response.generate(true,'Failed to delete user',500,null)
+            res.send(apiResponse)
+        }
+        else if(check.isEmpty(result)){
+            logger.info('No user found','User Controller: deleteUser')
+            let apiResponse=response.generata(true,'No User Found',404,null)
+            res.send(apiResponse)
+        }
+        else{
+            let apiResponse=response.generate(false,'Deleted the user successfully',200,null)
+            res.send(apiResponse)            
+        }
+    });
+}
+
+//EDIT USER FUNCTION
+let editUser=(req,res)=>{
+    let options=req.body;
+    UserModel.update({'userId':req.params.userId},options).exec((err,result)=>{
+        if(err){
+            console.log(err)
+            logger.error(err.message,'User Controller: editUser',10)
+            let apiResponse=response.generate(true,'Failed to edit user details',500,null)
+            res.send(apiResponse)
+        }
+        else if(check.isEmpty(result)){
+            logger.info('No User Found','Userer Controller: Edit User')
+            let apiResponse=response.generate(false,'No User FOund',404,null)
+            res.send(apiResponse)
+        }
+        else{
+            let apiResponse=response.generate(false,'User Details Edited',200,result)
+            res.send(apiResponses)
+        }
+    })
+}
+
+// start user signup function
 let signupFunction=(req,res)=>{
     let validateUseInput=()=>{
         return new Promise((resolve,reject)=>{
@@ -87,87 +175,180 @@ let signupFunction=(req,res)=>{
 }
 
 let loginFunction=(req,res)=>{
-    console.log("findUser");
-    return new Promise((resolve,reject)=>{
-        if(req.body.email){
-            console.log("req body email is there");
-            console.log(req.body)
-            UserModel.findOne({email:req.body.email},(err,userDetails)=>{
-                if(err){
-                    console.log(err)
-                    logger.error('Failed To Retrieve User Data','userController:findUser()',10)
-                    let apiResponse=response.generate(true,'Failed to Find User Details',500,null)
-                    reject(apiResponse)
-                }
-                else if(check.isEmpty(userDetails)){
-                    logger.error('No user found','usercontroller',findUser(),7)
-                    let apiResponse=response.generate(true,'No user details found',404,null)
-                    reject(apiResponse)
-                }
-                else{
-                    logger.info('User Found','userController:findUser()',10)
-                    resolve(userDetails)
-                }
-            })
-        }
-        else{
-            let apiResponse=response.generate(true,'email','parameter is missing',400,null)
-            reject(apiResponse)
-
-        }
-    })
-
-}
-let validatePassword=(retrievedUserDetails)=>{
-    console.log('Validate Password')
-    return new Promise((resolve,reject)=>{
-        passwordLib.comparePassword(req.body.password,retreivedUserDetails.password,(err,isMatch)=>{
-            if(err){
-                console.log(err)
-                logger.error(err.message,'userController:validatePassword()',10)
-                let apiResponse=response.generate(true,'Login Failed',500,null)
-                reject(apiResponse)
-            }
-            else if(isMatch){
-                let retrievedUserDetailsObj=retrievedUserDetails.toObjecct()
-                delete retrievedUserDetailsObj.password
-                delete retrievedUserDetailsObj._id
-                delete retrievedUserDetailsObj.__v
-                delete retrievedUserDetailsObj.createdOn
-                delete retrievedUserDetailsObj.modifiedOn
-                resolve(retrievedUserDetailsObj)
+    let findUser=()=>{
+        console.log("findUser");
+        return new Promise((resolve,reject)=>{
+            if(req.body.email){
+                console.log("req body email is there");
+                console.log(req.body)
+                UserModel.findOne({email:req.body.email},(err,userDetails)=>{
+                    if(err){
+                        console.log(err)
+                        logger.error('Failed To Retrieve User Data','userController:findUser()',10)
+                        let apiResponse=response.generate(true,'Failed to Find User Details',500,null)
+                        reject(apiResponse)
+                    }
+                    else if(check.isEmpty(userDetails)){
+                        logger.error('No user found','usercontroller',findUser(),7)
+                        let apiResponse=response.generate(true,'No user details found',404,null)
+                        reject(apiResponse)
+                    }
+                    else{
+                        logger.info('User Found','userController:findUser()',10)
+                        resolve(userDetails)
+                    }
+                })
             }
             else{
-                logger.info('Login Failed Due to Invalid Password','userController:validatePassword()',10)
-                let apiResponse=response.generate(true,'Wrong Password.login Failed',400,null)
+                let apiResponse=response.generate(true,'email','parameter is missing',400,null)
                 reject(apiResponse)
-            }
 
-        })
-    })
-}
-let generateToken=(userDetails)=>{
-    console.log('generate token')
-    return new Promise((resolve,reject)=>{
-        generateToken.generateToken(userDetails,(err,tokenDetails)=>{
-            if(err){
-                console.log(err)
-                let apiResponse=response.generate(true,'Failed to Generate Token',500,null)
-                reject(apiResponse)
             }
-        }).catch((err)=>{
-            console.log('errorhandler')
+      })
+
+    }
+    let validatePassword=(retrievedUserDetails)=>{
+        console.log('Validate Password')
+        return new Promise((resolve,reject)=>{
+            passwordLib.comparePassword(req.body.password,retreivedUserDetails.password,(err,isMatch)=>{
+                if(err){
+                    console.log(err)
+                    logger.error(err.message,'userController:validatePassword()',10)
+                    let apiResponse=response.generate(true,'Login Failed',500,null)
+                    reject(apiResponse)
+                }
+                else if(isMatch){
+                    let retrievedUserDetailsObj=retrievedUserDetails.toObjecct()
+                    delete retrievedUserDetailsObj.password
+                    delete retrievedUserDetailsObj._id
+                    delete retrievedUserDetailsObj.__v
+                    delete retrievedUserDetailsObj.createdOn
+                    delete retrievedUserDetailsObj.modifiedOn
+                    resolve(retrievedUserDetailsObj)
+                }
+                else{
+                    logger.info('Login Failed Due to Invalid Password','userController:validatePassword()',10)
+                    let apiResponse=response.generate(true,'Wrong Password.login Failed',400,null)
+                    reject(apiResponse)
+                }
+    
+            })
+        })
+    }
+    let generateToken=(userDetails)=>{
+        console.log('generate token')
+        return new Promise((resolve,reject)=>{
+            generateToken.generateToken(userDetails,(err,tokenDetails)=>{
+                if(err){
+                    console.log(err)
+                    let apiResponse=response.generate(true,'Failed to Generate Token',500,null)
+                    reject(apiResponse)
+                }
+            }).catch((err)=>{
+                console.log('errorhandler')
+                console.log(err)
+                res.status(err.status)
+                res.send(err)
+            })
+        })
+    }
+    let saveToken=(tokenDetails)=>{
+        console.log("save token")
+        return new promise((resolve,reject)=>{
+            authModel.findOne({userId:tokenDetails.userId},(err,retrievedTokenDetails)=>{
+                if(err){
+                    console.log(err.message,'userController:saveToken',10)
+                    let apiResponse=response.generate(true,'Failed to generate Token',500,null)
+                    reject(apiResponse)
+                }
+                else if (check.isEmpty(retrievedTokenDetails)){
+                    let newauthToken=new authModel({
+                        userId:tokenDetails.userId,
+                        authToken:tokenDetails.token,
+                        tokenSecret:tokenDetails.tokenSecret,
+                        tokenGenerationTime:time.now()
+                    })
+                    newauthToken.save((err,newTokenDetails)=>{
+                        if (err){
+                            console.log(err)
+                            logger.error(err.message,'User Controller:saveToken',10)
+                            let apiResponse=response.generate(true,'Failed to Generate Token',500,null)
+                            reject(apiResponse)
+                        }
+                        else{
+                            let responseBody={
+                                authToken: newTokenDetails.authToken,
+                                userDetails:tokenDetails.userDetails
+                            }
+                            resolve(responseBody)
+                        }
+                    })
+                }
+                else{
+                    retrievedTokenDetails.authToken=tokenDetails.token;
+                    retrievedTokenDetails.tokenSecret=tokenDetails.tokenSecret;
+                    retrievedTokenDetails.tokenGenerationTime=tokenDetails.tokenGenerationTime;
+                    retrievedTokenDetails.save((err,newTokenDetails)=>{
+                        if(err){
+                            console.log(err);
+                            logger.error(err.message,'userController:saveToken',10);
+                            let apiResponse=response.generate(true,'Failed to  Generate Token',500,null);
+                            reject(apiResponse)
+                        }
+                        else{
+                            let responseBody={
+                                authToken: newTokenDetails.authToken,
+                                userDetails:tokenDetails.userDetail
+                            }
+                            resolve(responseBody)
+                        }
+                        
+                    })
+                }
+            })
+        })
+        findUser(req,res).then(validatePassword).then(generateToken).then(saveToken).then((resolve)=>
+        {
+            let apiResponse=response.generate(false,'login successful',200,resolve)
+            res.send(200)
+            res.send(apiResponse)
+        })
+        .catch((err)=>{
             console.log(err)
             res.status(err.status)
             res.send(err)
-        })
-    })
-}
-let logout=(req,res)=>{
+        }) 
+    }
+    
 
 }
+
+//function to logout user
+//auth params:userId
+let logout=(req,res)=>{
+    authModel=findOneAndRemove({userId:req.user.userId},(err,resul)=>{
+        if (err){
+            console.log(err)
+            logger.error(err.message,'user Controller : logout',10)
+            let apiResponse=response.generate(true,`error occured: ${err.message}`,500,null)
+            res.send(apiResponse)
+        }
+        else if(check.isEmpty(result)){
+            let apiResponse=response.generate(true,'Already logged out or Invalid userId',404,null)
+            res.send(apiResponse)
+        }
+        else{
+            let apiResponse=response.generate('false','Logged out successfully',200,null)
+            res.send(apiResponse)
+        }
+    })
+}
 module.exports={
-    signupFunction:signupFunction,
-    loginFunction:loginFunction,
-    logout:logout
+    sigupFunction: signupFunction,
+    getAllUser: getAllUser,
+    editUser: editUser,
+    deleteUser: deleteUser,
+    getSingleUser: getSingleUser,
+    loginFunction: loginFunction,
+    logout: logout
 }

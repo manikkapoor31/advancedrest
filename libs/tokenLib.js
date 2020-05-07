@@ -1,6 +1,6 @@
 const jwt=require('jsonwebtoken')
 const shortid=require('shortid')
-const shortkey='someveryRandomKeyThatNobodyCanGuess'
+const secretkey='someveryRandomKeyThatNobodyCanGuess'
 
 let generateToken=(data,cb)=>{
     try{
